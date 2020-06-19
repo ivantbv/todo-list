@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Practical JavaScript</title>
+  <link rel="stylesheet" href="" type="text/css">
+</head>
+
+<body>
+  <div>
+  <h1>Todo List</h1>
+  <button onclick="handlers.toggleAll()">Toggle All</button>
+  </div>
+
+  <div>
+  <button onclick="handlers.addTodos()">Add a Todo</button>
+  <input id="addTodoTextInput" type="text">
+</div>
+
+<div>
+<button onclick="handlers.changeTodos()">Change a Todo</button>
+<input id="changeTodoPositionInput" type="number">
+<input id="changeTodoTextInput" type="text">
+</div>
+
+<div>
+<button onclick="handlers.toggleCompleted()">Complete a Todo</button>
+<input type="number" id="toggleCompletedInput">
+</div>
+
+<ul>
+</ul>
+
+  <script type="text/javascript">
+var todoList = {
+	todos: [],
+// 	displayTodos: function() {
+// 	if (this.todos.length === 0) {
+// 	console.log("Your todo list is empty!");
+// } else {
+// 	console.log("My todos: ");
+// 	for (var i = 0; i < this.todos.length; i++) {
+//   if (this.todos[i].completed === true) {
+//     console.log("(x)", this.todos[i].newText);
+//   } else { 
+//     console.log("( )", this.todos[i].newText);
+//     }
+// 	    }
+//         }
+// }, - COMMENTED OUT BECAUSE NOW ALL THE TODOS ARE DISPLAYED IN THE DOM FROM THE view METHOD.
+addTodos: function(newText) {
+	this.todos.push({
+	newText: newText,
+	completed: false	
+});
+}, changeTodos: function(position, newAdd) {
+	this.todos[position].newText = newAdd;
+}, deleteTodos: function(position, newPos) {
+	this.todos.splice(position, 1);
+}, toggleCompleted: function(position) {
+  	var todo = this.todos[position];
+	todo.completed = !todo.completed;
+}, toggleAll: function() {
+  var totalTodos = this.todos.length;
+  var completedTodos = 0;
+
+  //Get number of completed todos.
+  // for (var i = 0; i < totalTodos; i++) {
+  //   if (this.todos[i].completed === true) {
+  //     completedTodos++;
+  //   }
+  // }
+
+  this.todos.forEach(function(todo) //this.todos is an array,thats why we can call the forEach method on every array
+    {
+      if (todo.completed === true) {
+        completedTodos++;
+      }
+    });
+
+    // if (completedTodos === totalTodos) {
+    //       this.todos.forEach(function (todo) {
+    //     todo.completed = false;
+    //   });
+    // } else {
+    //   // for (var i = 0; i < totalTodos; i++) {
+    //   //   this.todos[i].completed = true;
+    //   this.todos.forEach(function(todo) {
+    //   todo.completed = true;
+    // });
+    // }
+    this.todos.forEach(function(todo) { 
+      if (completedTodos === totalTodos) {
+        todo.completed = false;
+      } else {
+        todo.completed = true;
+      }
+      });
+    }
+     };
+
+var handlers = {
+  addTodos: function() {
+    var addTodoTextInput = document.getElementById('addTodoTextInput'); // this line enables to access the input
+    todoList.addTodos(addTodoTextInput.value); // .value will return whatever is typed in
+    addTodoTextInput.value = ''; // this line resets the input field to empty every time someone adds something
+    view.displayTodos();
+  },
+  changeTodos: function() {
+    var changeTodoPositionInput = document.getElementById('changeTodoPositionInput');
+    var changeTodoTextInput = document.getElementById('changeTodoTextInput');
+    todoList.changeTodos(changeTodoPositionInput.valueAsNumber, changeTodoTextInput.value);
+    changeTodoPositionInput.value = '';
+    changeTodoTextInput.value = '';
+    view.displayTodos();
+  }, deleteTodos: function(position) {
+    todoList.deleteTodos(position);
+    view.displayTodos();
+  }, toggleCompleted: function() {
+    var toggleCompletedInput = document.getElementById('toggleCompletedInput');
+    todoList.toggleCompleted(toggleCompletedInput.valueAsNumber);
+    toggleCompletedInput.value = '';
+    view.displayTodos();
+  }, toggleAll: function() {
+  todoList.toggleAll();
+  view.displayTodos();
+  }
+};
+
+var view = {
+	displayTodos: function() {
+    var todosUl = document.querySelector('ul');
+    todosUl.innerHTML = '';
+
+  todoList.todos.forEach(function(todo, position) {
+var todoLi = document.createElement('li');
+    var todoTextWithCompletion = ''; //sets an empty value so it can be asigned with the if statement
+
+    if (todo.completed === true) {
+      todoTextWithCompletion = '(x) ' + todo.newText;
+    } else {
+      todoTextWithCompletion = '( ) ' + todo.newText;
+    }
+    todoLi.id = position;
+    todoLi.textContent = todoTextWithCompletion;
+    todoLi.appendChild(this.createDeleteButton());
+    todosUl.appendChild(todoLi);
+  }, this); //this refers to the view object. The forEach callback function is not a method on the view object, thats why we have to use "this"
+
+  },
+  createDeleteButton: function() {
+    var deleteButton = document.createElement('button');
+    deleteButton.textContent = 'x';
+    deleteButton.className = 'deleteButton'
+    return deleteButton;
+
+  },
+  setUpEventListener: function() {
+    var todosUl = document.querySelector('ul');
+//The below 4 lines of code is a higher order function:
+todosUl.addEventListener('click', function(event) {
+
+  //Get the element that was clicked on.
+  var elementClicked = event.target;
+
+  // check if elementClicked is a delete button
+  if (elementClicked.className === 'deleteButton') {
+    handlers.deleteTodos(parseInt(elementClicked.parentNode.id));
+  }
+});
+  }
+};
+view.setUpEventListener();
+  </script>
+</body>
+
+</html>
