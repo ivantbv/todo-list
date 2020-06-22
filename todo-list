@@ -29,11 +29,10 @@
 
 <ul>
 </ul>
-
+//end of the HTML
   <script type="text/javascript">
 var todoList = {
 	todos: [],
-
 addTodos: function(newText) {
 	this.todos.push({
 	newText: newText,
